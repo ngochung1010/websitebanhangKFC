@@ -19,6 +19,7 @@ class DonHangControllers extends CI_Controller {
     // public function in_donhang($madonhang)
     // {
     //     $this->load->library('Pdf');
+
     //     $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
 
     //     $pdf->SetTitle('Print Order: '.$madonhang);
@@ -83,6 +84,69 @@ class DonHangControllers extends CI_Controller {
     //     $pdf->writeHTML($html, true, false, true, false, '');
     //     $pdf->Output('Đặt Hàng: '.$madonhang.'.pdf', 'I'); 
     // }
+
+    //in đơn hàng
+    public function in_donhang($madonhang) {
+        // Load thư viện TCPDF
+        $this->load->library('Pdf');
+    
+        // Tạo đối tượng TCPDF
+        $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8');
+    
+        $pdf->SetTitle('Print Order: ' . $madonhang);
+        $pdf->SetHeaderMargin(30);
+        $pdf->SetTopMargin(20);
+        $pdf->SetFooterMargin(20);
+        $pdf->SetAutoPageBreak(true);
+        $pdf->SetAuthor('Author');
+        $pdf->SetDisplayMode('real', 'default');
+        $pdf->SetFont('dejavusans', '', 10);
+    
+        // In đơn hàng
+        $pdf->AddPage();
+        $this->load->model('DonHangModel');
+        $data['chitiet_donhang'] = $this->DonHangModel->printOrderDetails($madonhang);
+    
+        $html = '
+            <h3>Đơn hàng của bạn bao gồm các sản phẩm:</h3>    
+            <p>Cảm ơn bạn đã ủng hộ website <a href="#">kfcvietnam.com</a> của chúng tôi. Vui lòng liên hệ hotline nếu xảy ra sự cố: 19001900</p>        
+            <table border="1" cellspacing="3" cellpadding="4">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã Đơn Hàng</th>
+                        <th>Tên Món Ăn</th>
+                        <th>Giá Món Ăn</th>
+                        <th>Số Lượng</th>
+                        <th>Thành Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>';
+    
+        $total = 0;
+        foreach ($data['chitiet_donhang'] as $key => $product) {
+            $total += $product->qty * $product->giaban;
+            $html .= '
+                <tr>
+                    <td>' . $key . '</td>
+                    <td>' . $madonhang . '</td>
+                    <td>' . $product->tenmonan . '</td> 
+                    <td>' . $product->giaban . '</td>
+                    <td>' . $product->qty . '</td>
+                    <td>' . number_format($product->qty * $product->giaban, 0, ',', '.') . 'đ</td>
+                </tr>';
+        }
+    
+        $html .= '<tr><td colspan="7" align="right">Tổng tiền: ' . number_format($total, 0, ',', '.') . 'đ</td></tr>
+            </tbody>
+            </table>';
+
+        // Xóa dữ liệu đệm đã gửi trước đó
+        ob_clean();
+        // Xuất nội dung HTML
+        $pdf->writeHTML($html, true, false, true, false, '');
+        $pdf->Output('Order: ' . $madonhang . '.pdf', 'I');
+    }
 
 	public function index()
 	{

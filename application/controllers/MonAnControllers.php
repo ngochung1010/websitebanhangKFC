@@ -14,65 +14,106 @@ class MonAnControllers extends CI_Controller {
 		parent::__construct();
 		$this->load->model('MonAnModel');
 		$this->load->library("pagination");
+		
+		// $this->pagination->create_links();
+		// $this->pagination;
 	}
 
 	public function index()
 	{
 		//Phân trang trang chủ
-		// $config = array();
-        // $config["base_url"] = base_url() .'/phan-trang-monan/list'; 
-		// echo $config['total_rows'] = ceil($this->MonAnModel->countAllMonAn()); //đếm tất cả sản phẩm  //hàm ceil làm tròn phân trang 
-		// $config["per_page"] = 5; //từng trang 3 sản phẩn
-        // $config["uri_segment"] = 3; //lấy số trang hiện tại
-		// $config['use_page_numbers'] = TRUE; //trang có số
-		// $config['full_tag_open'] = '<ul class="pagination">';
-		// $config['full_tag_close'] = '</ul>';
-		// $config['first_link'] = 'First';
-		// $config['first_tag_open'] = '<li>';
-		// $config['first_tag_close'] = '</li>';
-		// $config['last_link'] = 'Last';
-		// $config['last_tag_open'] = '<li>';
-		// $config['last_tag_close'] = '</li>';
-		// $config['cur_tag_open'] = '<li class="active"><a>';
-		// $config['cur_tag_close'] = '</a></li>';
-		// $config['num_tag_open'] = '<li>';
-		// $config['num_tag_close'] = '</li>';
-		// $config['next_tag_open'] = '<li>';
-		// $config['next_tag_close'] = '</li>';
-		// $config['prev_tag_open'] = '<li>';
-		// $config['prev_tag_close'] = '</li>';
-		// //end custom config link
-		// $this->pagination->initialize($config); //tự động tạo trang
-		// $this->page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0; //nếu không lấy được số trang hiện tại thì trã về 0
-		// $this->data["links"] = $this->pagination->create_links(); //tự động tạo links phân trang dựa vào trang hiện tại
-		// $this->data['allMonAn_pagination'] = $this->MonAnModel->getMonAnPagination($config["per_page"], $this->page);
-		// //pagination
-
+		$config = array();
+		$config["base_url"] = base_url() . '/phan-trang-monan/list';
+		$config['total_rows'] = $this->MonAnModel->countAllMonAn();
+		$config["per_page"] = 9;
+		$config["uri_segment"] = 3;
+		$config['use_page_numbers'] = TRUE;
+		$config['full_tag_open'] = '<ul class="pagination">';
+		$config['full_tag_close'] = '</ul>';
+		$config['first_link'] = 'First';
+		$config['first_tag_open'] = '<li>';
+		$config['first_tag_close'] = '</li>';
+		$config['last_link'] = 'Last';
+		$config['last_tag_open'] = '<li>';
+		$config['last_tag_close'] = '</li>';
+		$config['cur_tag_open'] = '<li class="active"><a>';
+		$config['cur_tag_close'] = '</a></li>';
+		$config['num_tag_open'] = '<li>';
+		$config['num_tag_close'] = '</li>';
+		$config['next_tag_open'] = '<li>';
+		$config['next_tag_close'] = '</li>';
+		$config['prev_tag_open'] = '<li>';
+		$config['prev_tag_close'] = '</li>';
+	
+		$this->pagination->initialize($config);
+		$page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 1;
+		$start = ($page - 1) * $config["per_page"];
+		
+		$data["links"] = $this->pagination->create_links();
+		$data['allMonAn_pagination'] = $this->MonAnModel->getMonAnPagination($config["per_page"], $start);
+	
 		$this->checkLogin();
 		$this->load->view('admin_template/header');
-        $this->load->view('admin_template/navbar');
-
-		$this->load->model('MonAnModel');
-		$data['monan'] = $this->MonAnModel->selectMonAn();
-
-		$this->load->view('monan/list', $data);
+		$this->load->view('admin_template/navbar');
+		$data['page'] = $page;
+		$this->load->view('monan/list',$data);
+		// $this->load->view('monan/list', $data);
 		$this->load->view('admin_template/footer');
-		
 	}
-	//
-    public function add()
-	{
-		$this->checkLogin();
-		$this->load->view('admin_template/header');
-        $this->load->view('admin_template/navbar');
-		//gọi danh mục 
-		$this->load->model('MonAnModel');
-		$data['danhmuc'] = $this->MonAnModel->selectdanhmuc();
+	// public function index()
+	// {
+	// 	$this->checkLogin();
+	// 	$this->load->view('admin_template/header');
+	// 	$this->load->view('admin_template/navbar');
 
-		$this->load->view('monan/add', $data);
-		$this->load->view('admin_template/footer');
-		
-	}
+	// 	// Cấu hình phân trang
+	// 	$config = array();
+	// 	$config["base_url"] = base_url() . '/monan/index';
+	// 	$config["total_rows"] = $this->MonAnModel->countAllMonAn();
+	// 	$config["per_page"] = 6;
+	// 	$config["uri_segment"] = 3;
+	// 	// Cấu hình các tag HTML cho phân trang
+	// 	$config['full_tag_open'] = '<ul class="pagination">';
+	// 	$config['full_tag_close'] = '</ul>';
+	// 	$config['first_link'] = 'First';
+	// 	$config['first_tag_open'] = '<li>';
+	// 	$config['first_tag_close'] = '</li>';
+	// 	$config['last_link'] = 'Last';
+	// 	$config['last_tag_open'] = '<li>';
+	// 	$config['last_tag_close'] = '</li>';
+	// 	$config['cur_tag_open'] = '<li class="active"><a>';
+	// 	$config['cur_tag_close'] = '</a></li>';
+	// 	$config['num_tag_open'] = '<li>';
+	// 	$config['num_tag_close'] = '</li>';
+	// 	$config['next_tag_open'] = '<li>';
+	// 	$config['next_tag_close'] = '</li>';
+	// 	$config['prev_tag_open'] = '<li>';
+	// 	$config['prev_tag_close'] = '</li>';
+
+	// 	$this->pagination->initialize($config); // Khởi tạo cấu hình phân trang
+
+	// 	$page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+	// 	$data["links"] = $this->pagination->create_links(); // Tạo các liên kết phân trang
+	// 	$data['allMonAn_pagination'] = $this->MonAnModel->getMonAnPagination($config["per_page"], $page);
+
+	// 	$this->load->view('monan/list', $data);
+
+	// 	$this->load->view('admin_template/footer');
+	// }
+		//
+		public function add()
+		{
+			$this->checkLogin();
+			$this->load->view('admin_template/header');
+			$this->load->view('admin_template/navbar');
+			//gọi danh mục 
+			$this->load->model('MonAnModel');
+			$data['danhmuc'] = $this->MonAnModel->selectdanhmuc();
+
+			$this->load->view('monan/add', $data);
+			$this->load->view('admin_template/footer');
+			
+		}
 	//chi tiết món ăn
 	public function chitiet($id)
 	{

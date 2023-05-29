@@ -149,10 +149,11 @@ class indexControllers extends CI_Controller {
 		$this->load->view('pages/sanpham_chitiet', $this->data);
 		$this->load->view('pages/template/footer');
 	}
+
 	//đặt hàng
 	public function checkout()
 	{
-		if($this->session->userdata('LoggedInKhachHang') && $this->cart->contents()) // thỏa mãn 2 điều kiện
+		if($this->session->userdata('LoggedInKhachHang') && $this->cart->contents()) // thỏa mãn 2 điều kiện mới cho đặt hàng
 		{
 			$this->load->view('pages/template/header', $this->data);
 			// $this->load->view('pages/template/slider');
@@ -161,7 +162,7 @@ class indexControllers extends CI_Controller {
 		}
 		else
 		{
-			redirect(base_url().'gio-hang');
+			redirect(base_url().'dang-nhap');
 		}
 	}
 
@@ -362,6 +363,7 @@ class indexControllers extends CI_Controller {
 				// ];
 				// $this->session->set_userdata('LoggedInKhachHang',$session_array);
 				// $this->session->set_flashdata('success', 'Đăng Nhập Thành Công.');
+				
 				//gửi gmail---------------
 				$duongdan = base_url().'xac-thuc-dang-ky/?chu_ky_so='.$chu_ky_so.'&email='.$email; 
 				$tieude = "Đăng Ký Thành Công";
@@ -611,16 +613,17 @@ class indexControllers extends CI_Controller {
 		$data= [
 			'ten' => $this->input->post('ten'),
 			'sdt' => $this->input->post('sdt'),
-			'email' => $this->input->post('email'),
+			// 'email' => $this->input->post('email'),
 			'ghichu' => $this->input->post('ghichu')
 		];
 		$result = $this->indexModel->insertLienHe($data);
 		if($result)
 		{
-			$to_email = $this->input->post('email');
+			// $to_email = $this->input->post('email');
+			$to_email = 'luongngochung10102001@gmail.com';
 			$tieude = "Thông Tin Liên Hệ Của Khách: ".$this->input->post('ten');
-			$noidung = "Kiểm Tra Lại Thông Tin Liên Hệ" .
-						"\nSố Điện Thoại Của Bạn: ".$this->input->post('sdt').
+			$noidung = "Liên Hệ Ngay Với Khách Hàng:" .
+						"\nSố Điện Thoại Của ".$this->input->post('ten').": ".$this->input->post('sdt').
 						"\nThông Tin Ghi Chú: ".$this->input->post('ghichu');
 			$this->gui_email($to_email,$tieude,$noidung);
 		}

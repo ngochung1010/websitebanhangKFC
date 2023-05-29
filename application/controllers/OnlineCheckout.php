@@ -134,12 +134,12 @@ class OnlineCheckout extends CI_Controller {
         {
             $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"; //tạo mã ngân hàng
             $partnerCode = 'MOMOBKUN20180529';
-            $accessKey = 'klm05TvNBzhg7h7j';
-            $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
+            $accessKey = 'klm05TvNBzhg7h7j'; //Mã truy cập của bạn do MoMo cung cấp
+            $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa'; //Mã bí mật của bạn do MoMo cung cấp
 
-            $orderInfo = "Thanh toán qua MoMo";
+            $orderInfo = "Thanh toán qua MoMo"; //thông tin đơn hàng
             $amount = $tongtien;
-            $orderId = rand(00, 9999);
+            $orderId = rand(00, 9999); //mã đơn hàng được chọn ngẫu nhiên
             $redirectUrl = "http://localhost:8000/cam_on"; //trã về trang cảm ơn khi tanh toán song
             $ipnUrl = "http://localhost:8000/cam_on";
             $extraData = "";
