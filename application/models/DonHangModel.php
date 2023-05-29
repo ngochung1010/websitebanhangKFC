@@ -22,16 +22,16 @@ class DonHangModel extends CI_Model{
     }
 
     // in đơn hàng
-    // public function InChiTietDonHang($madonhang)
-    // {
-    //     $query = $this->db->select('donhang.madonhang, donhang.tinhtrang as tinhtrang_donhang ,chitiet_donhang.soluong as qty, chitiet_donhang.madonhang, chitiet_donhang.id_monan , monan.*')
-    //     ->from('chitiet_donhang')
-    //     ->join('monan', 'chitiet_donhang.id_monan=monan.id')
-    //     ->join('donhang','donhang.madonhang=chitiet_donhang.madonhang')
-    //     ->where('chitiet_donhang.madonhang', $madonhang)
-    //     ->get();
-    //     return $query->result();
-    // }
+    public function printOrderDetails($madonhang)
+    {
+        $query = $this->db->select('donhang.madonhang, donhang.tinhtrang as tinhtrang_donhang ,chitiet_donhang.soluong as qty, chitiet_donhang.madonhang, chitiet_donhang.id_monan , monan.*')
+        ->from('chitiet_donhang')
+        ->join('monan', 'chitiet_donhang.id_monan=monan.id')
+        ->join('donhang','donhang.madonhang=chitiet_donhang.madonhang')
+        ->where('chitiet_donhang.madonhang', $madonhang)
+        ->get();
+        return $query->result();
+    }
     
     //xóa đơn hang 
     public function DeLeTeDonHang($madonhang)

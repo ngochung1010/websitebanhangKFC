@@ -1,7 +1,8 @@
 <?php
 class DangNhapModel extends CI_Model{
     public function checkLogin($email, $password){
-        $query = $this->db->where('email', $email)->where('password', $password)->get('user');
+        //kiểm tra điều kiện email password và tình trạng = 1 là đã kích hoạt
+        $query = $this->db->where('email', $email)->where('password', $password)->where('tinhtrang', 1)->get('user');
         return $query->result();
     }
     //kiểm tra đăng nhập khách hàng
@@ -21,6 +22,18 @@ class DangNhapModel extends CI_Model{
         return $this->db->insert('user', $data); //THÊM DATA VÀO ĐÚNG BẲNG DANHMUC.
     }
     
+    //xác thực admin
+    public function getAdmin($email)
+    {
+        $query = $this->db->get_where('user', ['email' => $email]);
+        return $query->result();
+    }
+
+    public function activeAdmin($email, $data_admin)
+    {
+        return $this->db->update('user', $data_admin, ['email' => $email]);
+    }
+
     //đơn hàng
     public function NewDonHang($data){
         $this->db->insert('vanchuyen', $data);
