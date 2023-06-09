@@ -98,6 +98,7 @@ $route['dashboard']['GET'] = 'DanshboardContollers/index';
 //Đăng ký admin
 $route['dang-ky-admin']['GET'] = 'DangNhapControllers/dang_ky_admin';
 $route['dang-ky-thanh-vien']['POST'] = 'DangNhapControllers/dang_ky_thanh_vien';
+$route['xac-thuc']['GET'] = 'DangNhapControllers/xac_thuc';
 
 //LogOut
 $route['logout']['GET'] = 'DanshboardContollers/logout';
@@ -117,6 +118,15 @@ $route['thanh_truot/edit/(:any)']['GET'] = 'Thanh_TruotControllers/edit/$1'; //a
 $route['thanh_truot/update/(:any)']['POST'] = 'Thanh_TruotControllers/update/$1';
 $route['thanh_truot/store']['POST'] = 'Thanh_TruotControllers/store';
 
+//quản lý người dùng
+$route['nguoidung/list']['GET'] = 'NguoiDungControllers/index';
+$route['nguoidung/delete/(:any)']['GET'] = 'NguoiDungControllers/delete/$1';
+
+// quản lý liên hệ
+$route['lienhe/list']['GET'] = 'LienHeControllers/index';
+$route['lienhe/delete/(:any)']['GET'] = 'LienHeControllers/delete/$1';
+$route['lienhe/upload/(:any)']['GET'] = 'LienHeControllers/upload/$1';
+
 //Món Ăn
 $route['monan/add']['GET'] = 'MonAnControllers/add';
 $route['monan/list']['GET'] = 'MonAnControllers/index';
@@ -128,8 +138,11 @@ $route['monan/store']['POST'] = 'MonAnControllers/store';
 //phân trang món ăn
 $route['phan-trang-monan/list/(:num)'] = 'MonAnControllers/index/$1';
 $route['phan-trang-monan/list'] = 'MonAnControllers/index';
-//gởi gamil
+//gởi gamil cho khách hàng
 $route['test-email'] = 'indexControllers/gui_email';
+
+//gởi gmail cho chủ cửa hàng
+$route['test-email'] = 'DangNhapControllers/gui_gmail';
 //chi tiết
 $route['monan/chitiet/(:any)']['GET'] = 'MonAnControllers/chitiet/$1';
 $route['monan/chitiet_monan/(:any)']['GET'] = 'MonAnControllers/chitiet_monan/$1';
@@ -142,7 +155,7 @@ $route['donhang/delete/(:any)']['GET'] = 'DonHangControllers/delete_donhang/$1';
 $route['donhang/xuly']['POST'] = 'DonHangControllers/xuly';
 
 //In đơn hàng 
-// $route['donhang/in_donhang/(:any)']['GET'] = 'DonHangControllers/in_donhang/$1';
+$route['donhang/in-donhang/(:any)']['GET'] = 'DonHangControllers/in_donhang/$1';
 
 //bình luận 
 $route['binhluan/gui_binhluan']['POST'] = 'indexControllers/guibinhluan';
