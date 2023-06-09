@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+use Carbon\Carbon; //thư viện carbon lấy thời gian
 class OnlineCheckout extends CI_Controller {
 
     public function execPostRequest($url, $data)
@@ -72,7 +72,7 @@ class OnlineCheckout extends CI_Controller {
             if ($this->form_validation->run() == true)
             {
                 $email = $this->input->post('email');
-                //$hinhthuc = $this->input->post('hinhthuc');
+                // $hinhthuc = $this->input->post('hinhthuc');
                 $sdt = $this->input->post('sdt');
                 $tenkh = $this->input->post('tenkh');
                 $diachi = $this->input->post('diachi');
@@ -89,9 +89,9 @@ class OnlineCheckout extends CI_Controller {
                 
                 if($result){ 
                     //đặt hàng oder
-                    $madonhang = rand(00, 9999); //từ 00 đến 9999
+                    // $madonhang = rand(00, 9999); //từ 00 đến 9999
                     $data_oder = array(
-                        'madonhang' => $madonhang,
+                        // 'madonhang' => $madonhang,
                         'id_vanchuyen' => $result,
                         'tinhtrang' => 1
                         
@@ -99,10 +99,14 @@ class OnlineCheckout extends CI_Controller {
                     $insert_order = $this->DangNhapModel->insert_order($data_oder);
                     //chi tiết đơn hàng
                     foreach($this->cart->contents() as $item){
+                        $ngay_tao = Carbon::now('Asia/Ho_Chi_Minh');
                         $data_oder_details = array(
-                            'madonhang' => $madonhang, //dựa vào madondang của đặt hàng để lưu vào bảng chi tiết đặt hàng
+                            // 'madonhang' => $madonhang, //dựa vào madondang của đặt hàng để lưu vào bảng chi tiết đặt hàng
+                            'donhang_id' => $insert_order,
                             'id_monan' => $item['id'], //lấy từ session của them_gio_hang
-                            'soluong' => $item['qty'] ///lấy từ session của them_gio_hang
+                            'soluong' => $item['qty'], ///lấy từ session của them_gio_hang
+                            'giaban' => $item['price'],
+                            'ngaytaodonhang' => $ngay_tao
                             
                         );
                         $data_oder_details = $this->DangNhapModel->data_oder_details($data_oder_details);
@@ -144,7 +148,6 @@ class OnlineCheckout extends CI_Controller {
             $ipnUrl = "http://localhost:8000/cam_on";
             $extraData = "";
             
-            
            
                 $partnerCode = $partnerCode;
                 $accessKey = $accessKey;
@@ -157,8 +160,8 @@ class OnlineCheckout extends CI_Controller {
                 $extraData = $extraData;
             
                 $requestId = time() . "";
-                $requestType = "payWithATM"; //thanh toán với ATM
-                // $requestType = "captureWallet"; //thanh toán với QRcode
+                // $requestType = "payWithATM"; //thanh toán với ATM
+                $requestType = "captureWallet"; //thanh toán với QRcode
                 // $extraData = ($_POST["extraData"] ? $_POST["extraData"] : "");
                 //before sign HMAC SHA256 signature
                 $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
@@ -180,10 +183,92 @@ class OnlineCheckout extends CI_Controller {
                 $jsonResult = json_decode($result, true);  // decode json
             
                 //Just a example, please check more in there
+                $this->cart->destroy();
             
                 header('Location: ' . $jsonResult['payUrl']);
             
         }
+        // if(isset($_POST['payUrl'])) // Thanh toán bằng MoMo
+        // {
+        //     $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"; //tạo mã ngân hàng
+        //     $partnerCode = 'MOMOBKUN20180529';
+        //     $accessKey = 'klm05TvNBzhg7h7j'; //Mã truy cập của bạn do MoMo cung cấp
+        //     $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa'; //Mã bí mật của bạn do MoMo cung cấp
+
+        //     $orderInfo = "Thanh toán qua MoMo"; //thông tin đơn hàng
+        //     $amount = $tongtien;
+        //     $orderId = rand(00, 9999); //mã đơn hàng được chọn ngẫu nhiên
+        //     $redirectUrl = "http://localhost:8000/cam_on"; //trã về trang cảm ơn khi thanh toán thành công
+        //     $ipnUrl = "http://localhost:8000/ipn"; //đường dẫn IPN để xử lý phản hồi từ MoMo
+        //     $extraData = "";
+
+        //     $requestId = time() . "";
+        //     $requestType = "captureWallet"; //thanh toán với ví MoMo
+        //     $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
+        //     $signature = hash_hmac("sha256", $rawHash, $secretKey);
+        //     $data = array(
+        //         'partnerCode' => $partnerCode,
+        //         'accessKey' => $accessKey,
+        //         'requestId' => $requestId,
+        //         'amount' => $amount,
+        //         'orderId' => $orderId,
+        //         'orderInfo' => $orderInfo,
+        //         'redirectUrl' => $redirectUrl,
+        //         'ipnUrl' => $ipnUrl,
+        //         'extraData' => $extraData,
+        //         'requestType' => $requestType,
+        //         'signature' => $signature
+        //     );
+
+        //     $result = $this->execPostRequest($endpoint, json_encode($data));
+        //     $jsonResult = json_decode($result, true);
+
+        //     if(isset($jsonResult['payUrl'])){
+        //         // Chuyển hướng đến trang thanh toán MoMo
+        //         header('Location: ' . $jsonResult['payUrl']);
+        //         exit();
+        //     } else {
+        //         // Xử lý lỗi
+        //         echo "Có lỗi xảy ra khi tạo đơn hàng thanh toán MoMo.";
+        //         // Ghi log lỗi hoặc thông báo cho người dùng
+        //     }
+        // } elseif(isset($_POST['errorCode']) && isset($_POST['orderId']) && isset($_POST['message'])) {
+        //     // Xử lý phản hồi sau khi thanh toán thành công hoặc thất bại
+        //     if($_POST['errorCode'] == 0){
+        //         // Thanh toán thành công
+        //         // Lưu thông tin khách hàng vào cơ sở dữ liệu
+        //         $email = $this->input->post('email');
+        //         $sdt = $this->input->post('sdt');
+        //         $tenkh = $this->input->post('tenkh');
+        //         $diachi = $this->input->post('diachi');
+        //         $data = array(
+        //             'tenkh' => $tenkh,
+        //             'diachi' => $diachi,
+        //             'sdt' => $sdt,
+        //             'email' => $email,
+        //             'hinhthuc' => 'momo'
+        //         );
+        //         $this->load->model('DangNhapModel');
+        //         $result = $this->DangNhapModel->NewDonHang($data);
+
+        //         if($result){
+        //             // Xử lý đặt hàng và gửi email
+        //             // Chuyển hướng đến trang cảm ơn
+        //             header('Location: http://localhost:8000/cam_on');
+        //             exit();
+        //         } else {
+        //             // Xử lý lỗi khi lưu thông tin khách hàng vào cơ sở dữ liệu
+        //             echo "Có lỗi xảy ra khi lưu thông tin khách hàng.";
+        //             // Ghi log lỗi hoặc thông báo cho người dùng
+        //         }
+        //     } else {
+        //         // Thanh toán thất bại
+        //         // Xử lý lỗi thanh toán
+        //         echo "Có lỗi xảy ra khi thanh toán.";
+        //         // Ghi log lỗi hoặc thông báo cho người dùng
+        //     }
+        // }
+
         elseif(isset($_POST['redirect'])) //thanh toán bằng vnpay
         {
             // error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);

@@ -451,9 +451,9 @@ class indexControllers extends CI_Controller {
 			
 			if($result){ 
 				//đặt hàng oder
-				$madonhang = rand(00, 9999); //từ 00 đến 9999
+				// $madonhang = rand(00, 9999); //từ 00 đến 9999
 				$data_oder = array(
-					'madonhang' => $madonhang,
+					// 'madonhang' => $madonhang,
 					'id_vanchuyen' => $result,
 					'tinhtrang' => 1
 					
@@ -461,10 +461,14 @@ class indexControllers extends CI_Controller {
 				$insert_order = $this->DangNhapModel->insert_order($data_oder);
 				//chi tiết đơn hàng
 				foreach($this->cart->contents() as $item){
+					$ngay_tao = Carbon::now('Asia/Ho_Chi_Minh');
 					$data_oder_details = array(
-						'madonhang' => $madonhang, //dựa vào madondang của đặt hàng để lưu vào bảng chi tiết đặt hàng
+						// 'madonhang' => $madonhang, //dựa vào madondang của đặt hàng để lưu vào bảng chi tiết đặt hàng
+						'donhang_id' => $insert_order,
 						'id_monan' => $item['id'], //lấy từ session của them_gio_hang
-						'soluong' => $item['qty'] ///lấy từ session của them_gio_hang
+						'soluong' => $item['qty'], ///lấy từ session của them_gio_hang
+						'giaban' => $item['price'],
+						'ngaytaodonhang' => $ngay_tao
 						
 					);
 					$data_oder_details = $this->DangNhapModel->data_oder_details($data_oder_details);
@@ -504,6 +508,7 @@ class indexControllers extends CI_Controller {
 	//cảm ơn
 	public function cam_on()
 	{
+		//lưu dữ liệu momo
 		if(isset($_GET['partnerCode']))
 		{
 			$data_momo = [
@@ -603,10 +608,19 @@ class indexControllers extends CI_Controller {
 	//trang liên hệ 
 	public function lienhe()
 	{
-		$this->load->view('pages/template/header', $this->data);
-		// $this->load->view('pages/template/slider', $this->data);
-		$this->load->view('pages/lienhe');
-		// $this->load->view('pages/template/footer');
+		if($this->session->userdata('LoggedInKhachHang') && $this->cart->contents()) // thỏa mãn 2 điều kiện mới cho đặt hàng
+		{
+			$this->load->view('pages/template/header', $this->data);
+			// $this->load->view('pages/template/slider', $this->data);
+			$this->load->view('pages/lienhe');
+			// $this->load->view('pages/template/footer');
+		}
+		else
+		{
+			redirect(base_url().'dang-nhap');
+		}
+	
+		
 	}
 	public function gui_lienhe()
 	{
@@ -635,14 +649,15 @@ class indexControllers extends CI_Controller {
 	public function guibinhluan()
 	{
 		$data= [
-			'ten' => $this->input->post('name_comment'),
-			'email' => $this->input->post('email_comment'),
+			// 'ten' => $this->input->post('name_comment'),
+			// 'email' => $this->input->post('email_comment'),
 			'danh_gia' => $this->input->post('comments'),
 			'monan_id' => $this->input->post('monan_comment'),
+			'khachhang_id' => $this->input->post('khachhang_comment'),
 			'sao' => $this->input->post('star_rating'),
-			'tinhtrang' => 0,
+			'tinhtrang' => 1,
 			'ngay_thang' => Carbon::now('Asia/Ho_Chi_Minh')
-			
+				
 		];
 		$result = $this->indexModel->insertBinhLuan($data);
 		if($result)
@@ -653,6 +668,8 @@ class indexControllers extends CI_Controller {
 		{
 			echo 'failed';
 		}
+		
+		
 	}
 		
 }
