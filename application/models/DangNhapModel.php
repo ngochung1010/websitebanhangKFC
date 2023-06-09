@@ -42,7 +42,9 @@ class DangNhapModel extends CI_Model{
     //
     public function insert_order($data_oder)
     {
-        return $this->db->insert('donhang', $data_oder);
+        $this->db->insert('donhang', $data_oder);
+        $donhang_id = $this->db->insert_id();
+        return $donhang_id;
     }
     //chi tiết đơn hàng
     public function data_oder_details($data_oder_details)

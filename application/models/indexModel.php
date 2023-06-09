@@ -206,8 +206,16 @@
         //hiển thị bình luận
         public function getListComments($id)
         {
-            $query = $this->db->get_where('binhluan', ['tinhtrang' => 1]);
+            $query = $this->db->select('khachhang.tenkh as tenkhachhang, binhluan.*')
+            ->from('khachhang')
+            ->join('binhluan', 'binhluan.khachhang_id = khachhang.id')
+            // ->where('binhluan.khachhang_id', $id)
+            ->where('binhluan.tinhtrang', 1)
+            ->where('binhluan.monan_id', $id)
+            ->get();
             return $query->result();
+            // $query = $this->db->get_where('binhluan', ['tinhtrang' => 1 , 'monan_id' => $id]);
+            // return $query->result();
         }
     }
 ?>
